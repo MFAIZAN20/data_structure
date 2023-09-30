@@ -22,7 +22,7 @@ class solution
         return top == nullptr;
     }
 
-    void push(char s)
+    void push(int s)
     {
         solution *n = new solution(s);
         n->next = top;
@@ -30,44 +30,75 @@ class solution
         capacity++;
     }
 
-    char pop()
+    void pop()
     {
         if (isEmpty())
         {
             std::cout << "The Stack is empty" << std::endl;
-            return -1;
+            return ;
         }
         else
         {
             solution* temp = top;
             top = top->next;
-            char to_return = temp->letter;
             delete temp;
             temp = nullptr;
             capacity--;
-            return to_return;
         }
     }
 
-int* return_temperature_to_wait(int *arr[])
+void return_temperature_to_wait(int arr[],int size)
 {
-
-} 
-
-bool 
-    if (isEmpty())
+    for (int i = 0; i < size ; i++)
+    {
+        int count = 0;
+        bool find_weather = false;
+        for (int j = i+1; j < size; j++)
         {
-            return true;
+            count++;
+            if (arr[j] > arr[i]) 
+            {
+                find_weather = true;
+                break;
+            }
+        }
+        if (find_weather == true)
+        {
+            push(count);
         }
         else
         {
-            return false;
+            push(0);
         }
+        count = 0;
+    }
+}
+void printStack()
+{
+    if (top == nullptr)
+    {
+        cout << "The Stack is empty "<<endl;
+        return;
+    }
+    
+        solution *currentNode = top;
+        while (currentNode != nullptr) 
+        {
+            std::cout << currentNode->data << " ";
+            currentNode = currentNode->next;
+        }
+
+        std::cout << std::endl;
     }
 };
 
+
 int main()
 {
-    int temperatures = [73,74,75,71,69,72,76,73];
+    int temperatures[] = {73,74,75,71,69,72,76,73};
+    solution sol(0);
+    sol.return_temperature_to_wait(temperatures,8);
+
+    sol.printStack();
     return 0;
 }
