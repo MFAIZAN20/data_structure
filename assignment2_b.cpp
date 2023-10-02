@@ -2,22 +2,20 @@
 #include <cstring>
 using namespace std;
 
-class solution
+struct node
 {
-    public:
     char data;
-    solution *top;
-    solution *next;
-    int capacity;
+    node *next;
+    node *top = NULL;
+    int length;
 
-    solution(int val)
+    node(int val)
     {
         next = NULL;
         top = NULL;
-        data = val;
-        capacity = 0;
+        length = 1;
     }
-
+    
     bool isEmpty()
     {
         return top == nullptr;
@@ -38,10 +36,9 @@ class solution
 
     void push(char s)
     {
-        solution *n = new solution(s);
+        node *n = new node(s);
         n->next = top;
-        top = n;;
-        capacity++;
+        top = n;
     }
 
     char pop()
@@ -49,45 +46,73 @@ class solution
         if (isEmpty())
         {
             std::cout << "The Stack is empty" << std::endl;
-            return ;
+            return -1;
         }
         else
         {
-            solution* temp = top;
+            node *temp = top;
             top = top->next;
             char to_return =temp->data; 
             delete temp;
             temp = nullptr;
-            capacity--;
             return to_return;
         }
     }
-string cinverting_into_postfin(const string infix_string)
+bool isOparand(const char c)
+{
+    if (c == '+' || c == '-' || c == '*' || c== '/')
+    {
+        return false;
+    }
+    else
+        return true;
+}
+
+int presedence(char pre)
+{
+    if (pre == '-' || pre == '+')
+    {
+        return 1;
+    }
+    else
+    {
+        return 2;
+    }
+}
+
+string convert_infinx_to_postfix(const string infix_string)
 {
     string postfix;
-    int i = 0;
+    node note(0);
 
-    while (infix_string[i] != '\0')
-    {
-        char check = peek();
-        
-        if (infix_string[i] == '+' || '-')
+    for (char character : infix_string)
+    {   
+        if (!isOparand(character))
         {
-            if (check == '*' || '/' )
+            char check = note.data;
+            if (presedence(character) > presedence(check))
             {
-                char x = pop();
-                push(infix_string[i]);
-                postfix = postfix + x;
+                char x = note.pop();
+                note.push(character);
+                postfix += x;
+            }
+            else
+            {
+                note.push(character);
             }
         }
-        
-
-        i++;
-
+        else
+        {
+            postfix = postfix + character;
+        }
     }
-
-    return postfix;
+    while (!isEmpty())
+    {
+        char pop_value =  note.pop();
+        postfix += pop_value;
+    }
     
+    return postfix;
 }
 };
 
@@ -95,8 +120,11 @@ int main()
 {
     string infix;
     cout << "Please Enter The Number In The infix Form " <<endl;
-    getline(cin,infix);
-    
-    solution sol(0);
+    // getline(cin,infix);
+    infix = "Abd-ds+dd/";
+    node solution_object(0);
+
+    string return_string = solution_object.convert_infinx_to_postfix(infix);
+    cout << "The postfix is : " << return_string <<endl;
     return 0;
 }
