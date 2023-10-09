@@ -4,24 +4,32 @@ using namespace std;
 
 struct node
 {
-    char data;
+    int data;
     node *next;
-    node *top = NULL;
+    node *top;
     int length;
 
     node(int val)
     {
+        data = val;
         next = NULL;
         top = NULL;
-        length = 1;
+        length = 0;
     }
     
-    bool isEmpty()
+bool isEmpty()
     {
-        return top == nullptr;
+        if ( top == nullptr)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
-    char peek()
+int peek()
     {
         if (top == NULL)
         {
@@ -34,43 +42,52 @@ struct node
         }
     }
 
-    void push(char s)
+void push(int s)
     {
         node *n = new node(s);
         n->next = top;
         top = n;
+        length++;
     }
 
-    char pop()
+int pop() 
     {
-        if (isEmpty())
+        if (!isEmpty()) 
         {
-            std::cout << "The Stack is empty" << std::endl;
-            return -1;
+            node* temp = top;
+            int poppedValue = top->data;
+            top = top->next;
+            cout << "The pop value is : " << poppedValue<< endl;
+            delete temp;
+            length--;
+            return poppedValue;
         }
         else
         {
-            node *temp = top;
-            top = top->next;
-            char to_return =temp->data; 
-            delete temp;
-            temp = nullptr;
-            return to_return;
+            std::cout << "The Stack is Empty " << std::endl;
+            return 0;
         }
     }
-bool isOparand(const char c)
+bool isOparand(const int c)
 {
-    if (c == '+' || c == '-' || c == '*' || c== '/')
+    // + (Plus sign): ASCII value 43'
+    // - (Minus sign): ASCII value 45
+    // / (Forward slash): ASCII value 47
+    // * (Asterisk or multiplication symbol): ASCII value 42
+
+    if (c == 43 || c == 45 || c == 42 || c== 47)
     {
         return false;
     }
     else
+    {
         return true;
+    }
 }
 
-int presedence(char pre)
+int presedence(int pre)
 {
-    if (pre == '-' || pre == '+')
+    if (pre == 43 || pre == 45)
     {
         return 1;
     }
@@ -80,51 +97,66 @@ int presedence(char pre)
     }
 }
 
-string convert_infinx_to_postfix(const string infix_string)
+void convertStringToIntArray(const string& str, int* intArray)
 {
-    string postfix;
-    node note(0);
-
-    for (char character : infix_string)
-    {   
-        if (!isOparand(character))
-        {
-            char check = note.data;
-            if (presedence(character) > presedence(check))
-            {
-                char x = note.pop();
-                note.push(character);
-                postfix += x;
-            }
-            else
-            {
-                note.push(character);
-            }
-        }
-        else
-        {
-            postfix = postfix + character;
-        }
-    }
-    while (!isEmpty())
+    for (int i = 0; i < str.length(); ++i)
     {
-        char pop_value =  note.pop();
-        postfix += pop_value;
+        intArray[i] = str[i] -'0';
     }
-    
-    return postfix;
+}
+
+int evaluatePostfix(string exp)
+{
+    for (int i = 0; i < exp.size(); ++i) 
+    {
+        if (isOparand(exp[i]))
+        {
+            push(exp[i] - '0');
+        }
+        else 
+        {
+            int first_value = pop();
+            int second_value = pop();
+            switch (exp[i]) 
+            {
+            case '+':
+                push(second_value + first_value);
+                break;
+            case '-':
+                push(second_value - first_value);
+                break;
+            case '*':
+                push(second_value * first_value);
+                break;
+            case '/':
+                if (first_value == 0)
+                {
+                    cout << " Undefined Error " <<endl;
+                }
+                else
+                {
+                    push(second_value / first_value);
+                }
+                break;
+            }
+        }
+    }
+    int result;
+    while (isEmpty())
+    {
+        int current = pop();
+        result += current;
+    }
+    return result;
 }
 };
 
 int main()
 {
-    string infix;
-    cout << "Please Enter The Number In The infix Form " <<endl;
-    // getline(cin,infix);
-    infix = "Abd-ds+dd/";
+    string post;
+    post = "542*+9-";
     node solution_object(0);
-
-    string return_string = solution_object.convert_infinx_to_postfix(infix);
-    cout << "The postfix is : " << return_string <<endl;
+    int evaluated_expression = solution_object.evaluatePostfix(post);
+    cout << "The postfix is : " << evaluated_expression <<endl;
     return 0;
 }
