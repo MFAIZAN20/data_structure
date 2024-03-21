@@ -98,7 +98,6 @@ int main()
     int temperatures[] = {73,74,75,71,69,72,76,73};
     solution sol(0);
     sol.return_temperature_to_wait(temperatures,8);
-
     sol.printStack();
     return 0;
 }
